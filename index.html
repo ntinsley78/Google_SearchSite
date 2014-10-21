@@ -1,0 +1,249 @@
+<!DOCTYP html>
+<html>
+<head>
+	<title>Nick Tinsley - Google Search</title>
+		<link rel="stylesheet" type="text/css" href="style/stylesheet.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  		
+		<script type='text/javascript' src="scripts/javaScript.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+		<link rel='stylesheet' type='text/css' href='http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css'/>
+
+		<style type="text/css" media="screen">
+		<!--
+
+	.infiniteCarousel {
+  		width: 395px;
+  		position: relative;
+	}
+
+	.infiniteCarousel .cwrapper {
+  		width: 315px; /* .infiniteCarousel width - (.wrapper margin-left + .wrapper margin-right) */
+  		overflow: auto;
+  		min-height: 10em;
+  		margin: 0 40px;
+  		position: absolute;
+  		top: 0;
+	}
+
+	.infiniteCarousel ul a img {
+	  	border: 5px solid #000;
+  		-moz-border-radius: 5px;
+  		-webkit-border-radius: 5px;
+	}
+
+	.infiniteCarousel .cwrapper ul {
+  		width: 9999px;
+  		list-style-image:none;
+  		list-style-position:outside;
+  		list-style-type:none;
+  		margin:0;
+  		padding:0;
+  		position: absolute;
+  		top: 0;
+	}
+
+.infiniteCarousel ul li {
+  		display:block;
+  		float:left;
+  		padding: 10px;
+  		height: 85px;
+		width: 85px;
+	}
+
+	.infiniteCarousel ul li a img {
+  		display:block;
+	}
+
+	.infiniteCarousel .arrow {
+  		display: block;
+		  height: 36px;
+		  width: 37px;
+		  background: url(images/arrow.png) no-repeat 0 0;
+		  text-indent: -999px;
+		  position: absolute;
+		  top: 37px;
+		  cursor: pointer;
+	}
+
+	.infiniteCarousel .forward {
+  		background-position: 0 0;
+  		right: 0;
+	}
+
+	.infiniteCarousel .back {
+ 		 background-position: 0 -72px;
+ 	 	left: 0;
+	}
+
+	.infiniteCarousel .forward:hover {
+  	background-position: 0 -36px;
+	}
+
+		.infiniteCarousel .back:hover {
+  		background-position: 0 -108px;
+	}	
+
+
+
+	-->
+</style>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" charset = "utf-8">
+	
+	(function () {
+		$.fn.infiniteCarousel = function() {
+			function repeat(str, n)
+			{
+				return new Array(n+1).join(str);
+			}
+
+			return this.each(function(){
+				var $cwrapper = $('> div', this).css('overflow', 'hidden'),
+					$slider = $cwrapper.find('> ul').width(9999),
+					$items = $slider.find('> li'),
+					$single = $items.filter(':first')
+
+					singleWidth = $single.outerWidth(),
+					//how many items will be in the scroll bar.
+					visible = Math.ceil($cwrapper.innerWidth() / singleWidth),
+					currentPage =1,
+					pages = Math.ceil($items.length / visible);
+
+					console.log('singleWidth', singleWidth);
+					console.log('visible', visible);
+					console.log('pages', pages);
+
+					/* Tasks */
+					//pad page with empty element
+					if ($items.length % visible !=0)
+					{
+						//pad
+						$slider.append(repeat('<li class ="empty"/>', ($items.length % visible)));
+						$items = $slider.find('> li');
+
+						console.log('legnth of items', $items.length);
+						console.log('pad', ($items.length % visible));
+
+					}
+
+					//create carasel padding on left and right
+
+					$items.filter(':first').before($items.slice(-visible).clone().addClass('cloned'));
+					$items.filter(':last').after($items.slice(0, visible).clone().addClass('cloned'));
+					$items = $slider.find('> li');
+
+					//reset scroll
+					$cwrapper.scrollLeft(singleWidth * visible);
+
+
+					//paging function
+					function gotoPage(page)
+					{
+						var dir = page < currentPage ? -1 : 1,
+						n = Math.abs(currentPage - page),
+						left = singleWidth * dir * visible * n;
+
+						$cwrapper.filter(':not(:animated)').animate({
+							scrollLeft : '+=' + left
+						}, 500, function(){
+							//if page == last page then reset
+							if (page > pages)
+							{
+								$cwrapper.scrollLeft(singleWidth * visible);
+								page =1;
+							}
+							else if (page == 0)
+							{
+								page = pages;
+								$cwrapper.scrollLeft(singleWidth * visible * pages);
+
+							}
+							currentPage = page;
+
+						});
+
+					}
+
+					window.gotoPage = gotoPage;
+
+
+					//insert the back and forward images
+					$cwrapper.after('<a href="#" class ="arrow back">&lt;</a><a href="#" class = "arrow forward">&gt;</a>');
+
+
+					//bind the back and forward functions
+
+					$('a.back' , this).click(function(){
+						gotoPage(currentPage -1);
+						return false;
+					});
+
+					$('a.forward' , this).click(function(){
+						gotoPage(currentPage + 1);
+						return false;
+					});
+
+			});
+
+		};
+
+
+	})(jQuery);
+
+	$(document).ready(function(){
+		$('div.infiniteCarousel').infiniteCarousel();
+	});
+	
+
+</script>
+
+</head>
+<body>
+	<div class = "container">
+		<div class ="content">	
+
+		<h1>Custom Google Search</h1>
+		<div class ="content">
+	
+			<label for="searchBox">Type in your search and Click submit</label>
+			<input type="text" id="searchBox" name='searchBox' />
+			<button id='search'>Submit Search</button>
+			<button id='clear'>Clear Search</button>
+			<br>
+			<hr>
+			<br>
+
+			<div id='results'> 
+
+			</div>
+			<div class ="infiniteCarousel">
+				<div class="cwrapper">
+					<ul>
+						<li ><a href="http://www.flickr.com/photos/remysharp/3047035327/" title ="Tall Glow"><img src="http://farm4.static.flickr.com/3011/3047035327_ca12fb2397_s.jpg" height ="75" width="75" alt="tall glow" /></a></li>
+
+						<li ><a href="http://www.flickr.com/photos/remysharp/3047872076/" title ="Tall Glow"><img src="http://farm4.static.flickr.com/3184/3047872076_61a511a04b_s.jpg" height ="75" width="75" alt="tall glow" /></a></li>
+
+						<li><a href="http://www.flickr.com/photos/remysharp/3047871878/" title ="BS"><img src="http://farm4.static.flickr.com/3048/3047871878_84bfacbd35_s.jpg" height="75" width="75" alt="bs" /> </a></li>
+
+						<li><a href="http://www.flickr.com/photos/remysharp/3047034929/" title ="bs"><img src="http://farm4.static.flickr.com/3220/3047034929_97eaf50ea3_s.jpg" height ="75" width ="75" alt ="bs" /></a></li>
+
+
+
+
+					</ul>
+				</div>	
+				
+
+			</div>
+
+
+	
+
+		</div>
+ 	</div>
+</body>	
+</html>
